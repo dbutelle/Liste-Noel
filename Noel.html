@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste de Noël Interactive 2025</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Chosen Palette: Festive Neutral (Base: bg-gray-50/text-gray-900, Accent: bg-red-700/text-white, Price: text-green-600) -->
+    <!-- Application Structure Plan: Une grille de cartes filtrable. Cette structure est plus orientée vers la tâche de l'acheteur que la disposition statique originale en 'slides'. Les utilisateurs peuvent cliquer sur des boutons de catégorie (ex: 'LEGO', 'Mode') pour filtrer instantanément la grille visuelle, permettant une exploration et une comparaison faciles des articles par type. -->
+    <!-- Visualization & Content Choices: Suppression des images pour garantir la stabilité de l'affichage dans l'environnement. La carte se concentre désormais sur le prix, la description et le lien cliquable. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+            /* bg-gray-50 */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .filter-btn {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .filter-btn.active {
+            background-color: #b91c1c;
+            /* bg-red-700 */
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .product-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            min-height: 250px;
+            /* Réduction de la hauteur car il n'y a plus d'image */
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Suppression des styles d'image inutiles */
+    </style>
+</head>
+
+<body class="text-gray-900">
+
+    <div class="container mx-auto max-w-7xl px-4 py-12">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800">🎁 Liste de Noël 2025</h1>
+            <p class="text-lg text-gray-600 mt-2">Les souhaits pour un Noël Magique</p>
+            <p class="text-sm text-red-700 font-semibold mt-2">Prix indicatifs et liens d'achat cliquables.</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 class="text-xl font-semibold text-center mb-4 text-gray-700">Filtrer par catégorie</h2>
+            <nav id="filter-nav" class="flex flex-wrap justify-center gap-3">
+            </nav>
+        </section>
+
+        <main id="item-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        </main>
+
+        <footer class="text-center mt-16 text-gray-500">
+            <p>🎅 Joyeux Noël !</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const items = [
+                // *** LEGO ***
+                { id: 'lego1', name: 'Petite Sunny Bouquet (10347)', category: 'LEGO', price: 29.99, details: 'LEGO Icons (Fleurs)', link: 'https://www.lego.com/fr-fr/product/petite-sunny-bouquet-10347' },
+                { id: 'lego2', name: 'High-Speed Train (40518)', category: 'LEGO', price: 19.99, details: 'LEGO Creator (Train) | QUANTITE: 2', link: 'https://www.lego.com/fr-fr/product/high-speed-train-40518' },
+                { id: 'lego3', name: 'Adults Sweatshirt - Black', category: 'Mode', price: 49.99, details: 'Vêtement LEGO (5009098) | TAILLE: L ou M', link: 'https://www.lego.com/fr-fr/product/adults-sweatshirt-black-5009098' },
+                { id: 'lego4', name: 'Large Winking Girl Ceramic Mug', category: 'Geek', price: 24.99, details: 'Tasse Céramique LEGO', link: 'https://www.lego.com/fr-fr/product/large-winking-girl-ceramic-mug-5007876' },
+
+                // *** MODE ***
+                { id: 'mode1', name: 'Bonnet Hilfiger Flag Cachemire', category: 'Mode', price: 39.90, details: 'Tommy Hilfiger', link: 'https://fr.tommy.com/bonnet-hilfiger-flag-avec-cachemire-am0am12796dw6' },
+                { id: 'mode2', name: 'T-shirt manche longue Levi\'s x Toy Story', category: 'Mode', price: 45.00, details: 'Levi\'s x Toy Story | TAILLE: L ou M', link: 'https://www.levi.com/FR/fr_FR/vtements/vtements-homme-levis/t-shirts/t-shirt-a-poche-et-manche-longue-levis-x-toy-story/p/0034Q0000' },
+                { id: 'mode3', name: 'Dunk Low (IM1448-100)', category: 'Mode', price: 104.99, details: 'Nike LEGO Collection | TAILLE: 36.5', link: 'https://www.nike.com/fr/t/chaussure-dunk-low-lego-collection-pour-ado-7ydjdev2/IM1448-100' },
+                { id: 'mode4', name: 'Dunk Low (IF2117-100)', category: 'Mode', price: 104.99, details: 'Nike LEGO Collection | TAILLE: 36.5', link: 'https://www.nike.com/fr/t/chaussure-dunk-low-lego-collection-pour-ado-fuzYfTa3/IF2117-100' },
+
+                // *** CULTURE ***
+                { id: 'culture1', name: 'Tremblez, Crimes qui venaient du froid', category: 'Culture', price: 22.00, details: 'Livre (Collectif)', link: 'https://www.fnac.com/a21029344/Collectif-Tremblez-Crimes-qui-venaient-du-froid' },
+                { id: 'culture2', name: 'The Mandalorian T03', category: 'Culture', price: 7.90, details: 'Manga / BD (Yusuke Osawa)', link: 'https://www.fnac.com/a20592450/The-Mandalorian-Star-Wars-The-Mandalorian-T03-Yusuke-Osawa' },
+
+                // *** TECH ***
+                { id: 'tech1', name: 'Souris gaming sans fil Logitech G309', category: 'Tech', price: 59.99, details: 'Lightspeed Bluetooth, Noir', link: 'https://www.fnac.com/Souris-gaming-sans-fil-Logitech-G309-Lightspeed-Bluetooth-Noir/a20615870/w-4' },
+                { id: 'tech2', name: 'Coque Apple Watch Case', category: 'Tech', price: 17.99, details: 'RhinoShield | Pour SE 2 - 40mm', link: 'https://rhinoshield.fr/products/apple-watch-case/buy?identification=apple-watch-case&device=apple-watch-se-2-40mm&device_color=morning-mist&product_line=73&spec=52' },
+                { id: 'tech3', name: 'Coque Solidsuit Toy Story (SH101)', category: 'Tech', price: 50.99, details: 'RhinoShield | Pour iPhone 15 Pro Mag Safe', link: 'https://rhinoshield.fr/design-studio/collections/toy-story/SH101?identification=solidsuit&device=iphone-15-pro&device_color=blue-titanium-495060&product_line=225&spec=Z9&from=search' },
+                { id: 'tech4', name: 'Casque Moto Bluetooth XGP', category: 'Tech', price: 129.99, details: 'Intercom Bluetooth V5.2', link: 'https://www.amazon.fr/XGP-Bluetooth-communication-%C3%A9tanch%C3%A9it%C3%A9-haut-parleurs/dp/B0CC242HV5/ref=sr_1_14' },
+
+                // *** GEEK ***
+                { id: 'geek1', name: 'POP! Animation N°2043 - Akaza', category: 'Geek', price: 15.99, details: 'Demon Slayer', link: 'https://www.shopforgeek.com/fr/DEMON-SLAYER-POP-ANIMATION-N-2043-AKAZA-240433.html' },
+                { id: 'geek2', name: 'POP! Disney N°1596 - Andy', category: 'Geek', price: 15.99, details: 'Toy Story 30e Anniv.', link: 'https://www.shopforgeek.com/fr/TOY-STORY-30EME-ANNIVERSAIRE-POP-DISNEY-N-1596-ANDY-238985.html' },
+                { id: 'geek3', name: 'POP! Disney N°1600 - Al', category: 'Geek', price: 15.99, details: 'Toy Story 30e Anniv.', link: 'https://www.shopforgeek.com/fr/TOY-STORY-30EME-ANNIVERSAIRE-POP-DISNEY-N-1600-AL-238986.html' },
+                { id: 'geek4', name: 'POP! Disney N°1595 - Alien', category: 'Geek', price: 15.99, details: 'Toy Story 30e Anniv.', link: 'https://www.shopforgeek.com/fr/TOY-STORY-30EME-ANNIVERSAIRE-POP-DISNEY-N-1595-ALIEN-238984.html' },
+                { id: 'geek5', name: 'Mug Toy Story Intérieur Coloré', category: 'Geek', price: 11.99, details: 'Mug 325ML', link: 'https://www.shopforgeek.com/fr/DISNEY-TOY-STORY-MUG-INTERIEUR-COLORE-325ML-232262.html' },
+                { id: 'geek6', name: 'Grande peluche Rex Cuddleez', category: 'Geek', price: 45.00, details: 'Toy Story | 59 cm', link: 'https://www.disneystore.fr/grande-peluche-rex-cuddleez-toy-story-59%C2%A0cm-415160443282.html' }
+            ];
+
+            const categories = [
+                { id: 'tous', name: 'Tous les Cadeaux', icon: '🎁' },
+                { id: 'LEGO', name: 'Sets LEGO', icon: '🧱' },
+                { id: 'Mode', name: 'Mode & Chaussures', icon: '👕' },
+                { id: 'Geek', name: 'Geek & Toy Story', icon: '🎮' },
+                { id: 'Tech', name: 'High-Tech', icon: '💻' },
+                { id: 'Culture', name: 'Culture & Lecture', icon: '📚' }
+            ];
+
+            const grid = document.getElementById('item-grid');
+            const nav = document.getElementById('filter-nav');
+
+            function formatPrice(price) {
+                return price.toFixed(2).replace('.', ',');
+            }
+
+            function renderItems(itemsToRender) {
+                grid.innerHTML = '';
+                itemsToRender.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'product-card bg-white rounded-xl shadow-lg overflow-hidden flex flex-col p-5'; // Ajout de padding ici
+                    card.dataset.category = item.category;
+
+                    let detailsClass = 'text-sm font-medium text-gray-500';
+                    let priceTag = `<span class="text-2xl font-extrabold text-green-600">${formatPrice(item.price)} €</span>`;
+
+                    // Mettre en évidence les tailles/spécifications
+                    if (item.details.includes('TAILLE:') || item.details.includes('40mm') || item.details.includes('iPhone') || item.details.includes('QUANTITE')) {
+                        detailsClass = 'text-sm font-bold text-red-700 mt-2';
+                    }
+
+                    card.innerHTML = `
+                        <div class="flex-grow">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">${item.category}</span>
+                                ${priceTag}
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-800 mt-1 mb-2 leading-tight">${item.name}</h3>
+                            <p class="text-gray-600 mb-1">${item.details.split(' | ')[0]}</p>
+                            ${item.details.includes('|') ? `<p class="${detailsClass}">${item.details.split(' | ')[1]}</p>` : ''}
+                        </div>
+                        <div class="pt-3 border-t border-gray-100 mt-4">
+                            <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="block w-full text-center bg-red-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:bg-red-700 transition-colors duration-200">
+                                Voir sur le site ↗
+                            </a>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+
+            function initFilters() {
+                categories.forEach((category, index) => {
+                    const button = document.createElement('button');
+                    button.className = 'filter-btn bg-white text-gray-700 font-semibold py-2 px-5 rounded-full shadow-md hover:bg-gray-100';
+                    button.textContent = `${category.icon} ${category.name}`;
+                    button.dataset.category = category.id;
+
+                    if (index === 0) {
+                        button.classList.add('active');
+                    }
+
+                    button.addEventListener('click', () => {
+                        filterItems(category.id);
+                        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                        button.classList.add('active');
+                    });
+                    nav.appendChild(button);
+                });
+            }
+
+            function filterItems(category) {
+                const cards = document.querySelectorAll('.product-card');
+                cards.forEach(card => {
+                    if (category === 'tous' || card.dataset.category === category) {
+                        card.classList.remove('hidden');
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+            }
+
+            renderItems(items);
+            initFilters();
+        });
+    </script>
+</body>
+
+</html>
